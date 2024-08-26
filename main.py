@@ -10,6 +10,9 @@ bot = Bot(token=config.BOT_TOKEN)
 dp = Dispatcher()
 
 
+UTC_OFFSET = 3
+
+
 @dp.message(filters.CommandStart())
 async def start_timer(message: types.Message):
     text = [
@@ -63,7 +66,7 @@ async def stop_timer(message: types.Message):
 @dp.message(filters.Command("day_stat"))
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
-    start_period = datetime.now() - timedelta(days=1)
+    start_period = datetime.now() - timedelta(days=1, hours=UTC_OFFSET)
     duration, count = get_stat(user_id=user_id, period=start_period)
     stats = [
         f"⌚Потраченное время за сегодня: {timedelta(seconds=duration)}.",
@@ -75,7 +78,7 @@ async def get_stats(message: types.Message):
 @dp.message(filters.Command("week_stat"))
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
-    start_period = datetime.now() - timedelta(weeks=1)
+    start_period = datetime.now() - timedelta(weeks=1, hours=UTC_OFFSET)
     duration, count = get_stat(user_id=user_id, period=start_period)
     stats = [
         f"⌚Потраченное время за неделю: {timedelta(seconds=duration)}.",
@@ -87,7 +90,7 @@ async def get_stats(message: types.Message):
 @dp.message(filters.Command("month_stat"))
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
-    start_period = datetime.now() - timedelta(days=30)
+    start_period = datetime.now() - timedelta(days=30, hours=UTC_OFFSET)
     duration, count = get_stat(user_id=user_id, period=start_period)
     stats = [
         f"⌚Потраченное время за месяц: {timedelta(seconds=duration)}.",
