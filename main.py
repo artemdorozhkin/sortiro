@@ -68,9 +68,9 @@ async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = datetime.now() - timedelta(days=1, hours=UTC_OFFSET)
     duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = (
+    average_time = str(
         timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    )
+    ).split(".")[0]
 
     stats = [
         f"⌚Потраченное время за сегодня: {timedelta(seconds=duration)}.",
@@ -85,9 +85,9 @@ async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = datetime.now() - timedelta(weeks=1, hours=UTC_OFFSET)
     duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = (
+    average_time = str(
         timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    )
+    ).split(".")[0]
 
     stats = [
         f"⌚Потраченное время за неделю: {timedelta(seconds=duration)}.",
@@ -102,9 +102,9 @@ async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = datetime.now() - timedelta(days=30, hours=UTC_OFFSET)
     duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = (
+    average_time = str(
         timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    )
+    ).split(".")[0]
 
     stats = [
         f"⌚Потраченное время за месяц: {timedelta(seconds=duration)}.",
@@ -119,9 +119,9 @@ async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = None
     duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = (
+    average_time = str(
         timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    )
+    ).split(".")[0]
 
     stats = [
         f"⌚Потраченное время за все время: {timedelta(seconds=duration)}.",
