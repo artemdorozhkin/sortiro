@@ -3,10 +3,13 @@ from datetime import datetime, timedelta
 from typing import Union
 
 from aiogram import Bot, Dispatcher, types, filters
+from aiogram.enums import ParseMode
+from aiogram.client.default import DefaultBotProperties
 
 from app import config, database
 
-bot = Bot(token=config.BOT_TOKEN)
+props = DefaultBotProperties(parse_mode=ParseMode.HTML)
+bot = Bot(token=config.BOT_TOKEN, default=props)
 dp = Dispatcher()
 
 
@@ -67,16 +70,8 @@ async def stop_timer(message: types.Message):
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = datetime.now() - timedelta(days=1, hours=UTC_OFFSET)
-    duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = str(
-        timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    ).split(".")[0]
-
-    stats = [
-        f"⌚Потраченное время за сегодня: {timedelta(seconds=duration)}.",
-        f"🔄️Сегодня ты облегчался: {count} {pluralization(count)}.",
-        f"📊Среднее время: {average_time}.",
-    ]
+    stats = get_stat(user_id=user_id, period=start_period)
+    stats.insert(0, "📈<b>Статистика за день</b>\n")
     await message.reply("\n".join(stats))
 
 
@@ -84,16 +79,8 @@ async def get_stats(message: types.Message):
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = datetime.now() - timedelta(weeks=1, hours=UTC_OFFSET)
-    duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = str(
-        timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    ).split(".")[0]
-
-    stats = [
-        f"⌚Потраченное время за неделю: {timedelta(seconds=duration)}.",
-        f"🔄️На неделе ты облегчался: {count} {pluralization(count)}.",
-        f"📊Среднее время: {average_time}.",
-    ]
+    stats = get_stat(user_id=user_id, period=start_period)
+    stats.insert(0, "📈<b>Статистика за неделю</b>\n")
     await message.reply("\n".join(stats))
 
 
@@ -101,16 +88,8 @@ async def get_stats(message: types.Message):
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = datetime.now() - timedelta(days=30, hours=UTC_OFFSET)
-    duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = str(
-        timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    ).split(".")[0]
-
-    stats = [
-        f"⌚Потраченное время за месяц: {timedelta(seconds=duration)}.",
-        f"🔄️За месяц ты облегчался: {count} {pluralization(count)}.",
-        f"📊Среднее время: {average_time}.",
-    ]
+    stats = get_stat(user_id=user_id, period=start_period)
+    stats.insert(0, "📈<b>Статистика за месяц</b>\n")
     await message.reply("\n".join(stats))
 
 
@@ -118,16 +97,8 @@ async def get_stats(message: types.Message):
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
     start_period = None
-    duration, count = get_stat(user_id=user_id, period=start_period)
-    average_time = str(
-        timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
-    ).split(".")[0]
-
-    stats = [
-        f"⌚Потраченное время за все время: {timedelta(seconds=duration)}.",
-        f"🔄️За все время ты облегчался: {count} {pluralization(count)}.",
-        f"📊Среднее время: {average_time}.",
-    ]
+    stats = get_stat(user_id=user_id, period=start_period)
+    stats.insert(0, "📈<b>Статистика за все время</b>\n")
     await message.reply("\n".join(stats))
 
 
@@ -137,10 +108,18 @@ def get_stat(user_id: int, period: Union[datetime, None]):
     else:
         stat = database.get_stats(user_id=user_id)
     if stat:
-        print(stat)
         duration, count = stat
 
-    return duration if duration else 0, count if count else 0
+    duration, count = duration if duration else 0, count if count else 0
+    average_time = str(
+        timedelta(seconds=duration / count) if count > 0 else timedelta(seconds=0)
+    ).split(".")[0]
+
+    return [
+        f"⌚Потраченное время: {timedelta(seconds=duration)}.",
+        f"🔄️Ты облегчался: {count} {pluralization(count)}.",
+        f"📊Среднее время: {average_time}.",
+    ]
 
 
 def pluralization(count: int):
