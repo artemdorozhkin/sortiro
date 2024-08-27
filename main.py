@@ -69,7 +69,7 @@ async def stop_timer(message: types.Message):
 @dp.message(filters.Command("day_stat"))
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
-    start_period = datetime.now() - timedelta(days=1, hours=UTC_OFFSET)
+    start_period = datetime.now() - timedelta(days=1) + timedelta(hours=UTC_OFFSET)
     stats = get_stat(user_id=user_id, period=start_period)
     stats.insert(0, "📈<b>Статистика за день</b>\n")
     await message.reply("\n".join(stats))
@@ -78,7 +78,7 @@ async def get_stats(message: types.Message):
 @dp.message(filters.Command("week_stat"))
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
-    start_period = datetime.now() - timedelta(weeks=1, hours=UTC_OFFSET)
+    start_period = datetime.now() - timedelta(weeks=1) + timedelta(hours=UTC_OFFSET)
     stats = get_stat(user_id=user_id, period=start_period)
     stats.insert(0, "📈<b>Статистика за неделю</b>\n")
     await message.reply("\n".join(stats))
@@ -87,7 +87,7 @@ async def get_stats(message: types.Message):
 @dp.message(filters.Command("month_stat"))
 async def get_stats(message: types.Message):
     user_id = message.from_user.id
-    start_period = datetime.now() - timedelta(days=30, hours=UTC_OFFSET)
+    start_period = datetime.now() - timedelta(days=30) + timedelta(hours=UTC_OFFSET)
     stats = get_stat(user_id=user_id, period=start_period)
     stats.insert(0, "📈<b>Статистика за месяц</b>\n")
     await message.reply("\n".join(stats))
